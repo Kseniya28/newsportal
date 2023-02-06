@@ -1,0 +1,106 @@
+from news.models import *
+>>> u1 = User.objects.create_user(username='Bro')
+>>> u1
+<User: Bro>
+>>> u2 = User.objects.create_user(username='Sis')
+>>> u2
+<User: Sis>
+>>> Author.objects.create(authorUser=u1)
+<Author: Author object (1)>
+>>> Author.objects.create(authorUser=u2)
+<Author: Author object (2)>
+Category.objects.create(name='Art')
+<Category: Category object (1)>
+>>> Category.objects.create(name='Music')
+<Category: Category object (2)>
+>>> Category.objects.create(name='Sport')
+<Category: Category object (3)>
+>>> Category.objects.create(name='IT')
+<Category: Category object (4)>
+>>> author = Author.objects.get(id=1)
+>>> author
+<Author: Author object (1)>
+>>> Post.objects.create(author=author, categoryType='NW', title='Somenews', text='Aboutso
+menews')
+<Post: Post object (1)>
+>>> Post.objects.create(author=author, categoryType='AR', title='Wildanimals', text='AboutWildanimals') 
+<Post: Post object (2)>
+>>> Post.objects.create(author=author, categoryType='AR', title='ModernArt', text='AboutM
+odernArt')
+<Post: Post object (3)>
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=3))
+>>> Post.objects.get(id=1).postCategory.add(Category.objects.get(id=4))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=2))
+>>> Post.objects.get(id=2).postCategory.add(Category.objects.get(id=3))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=1))
+>>> Post.objects.get(id=3).postCategory.add(Category.objects.get(id=4))
+
+>>> Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=author.authorUser, text='Supernews')
+<Comment: Comment object (1)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=1), commentUser=author.authorUser, text='Amazingnews')
+<Comment: Comment object (2)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=2), commentUser=author.authorUser, text='loveanimals')
+<Comment: Comment object (3)>
+>>> Comment.objects.create(commentPost=Post.objects.get(id=3), commentUser=author.authorUser, text='imakemodernart')
+<Comment: Comment object (4)>
+>>>
+
+
+>>> Post.objects.get(id=1).like()
+>>> Post.objects.get(id=1).dislike()
+>>> Post.objects.get(id=2).like()
+>>> Post.objects.get(id=3).like()
+>>> Comment.objects.get(id=1).like()
+>>> Comment.objects.get(id=4).dislike()
+>>> Comment.objects.get(id=1).dislike()
+>>> Comment.objects.get(id=3).like()
+
+>>> Comment.objects.get(id=1).rating
+0
+>>> Comment.objects.get(id=3).rating
+1
+>>>
+
+>>> a=Author.objects.get(id=1)
+>>> a.update_rating()
+>>> a.ratingAuthor
+6
+>>>
+>>> a = Author.objects.order_by('-ratingAuthor')
+>>> a
+<QuerySet [<Author: Author object (1)>, <Author: Author object (2)>]>
+>>> a = Author.objects.order_by('-ratingAuthor')[:1]
+>>> a
+<QuerySet [<Author: Author object (1)>]>
+>>>
+>>> a.ratingAuthor
+Traceback (most recent call last):
+  File "<console>", line 1, in <module>
+AttributeError: 'QuerySet' object has no attribute 'ratingAuthor'
+>>> for i in a:
+...     i.ratingAuthor
+...     i.authorUser.username
+...
+6
+'Bro'
+>>>
+
+>>> b = Post.objects.order_by('-rating').values('dateCreation', 'author__authorUser__username', 'rating', 'title')[0] 
+>>> b
+{'dateCreation': datetime.datetime(2023, 2, 6, 20, 13, 53, 532402, tzinfo=datetime.timezone.utc), 'author__authorUser__username': 'Bro', 'rating': 1, 'title': 'Wildanimals'}     
+>>>
+>>> Post.objects.order_by('-rating')[0].preview()
+'AboutWildanimals...'
+>>> 
+>>> Post.objects.order_by('-rating')[0].comment_set.all().values('dateCreation', 'commentUser__username', 'rating', 'text')
+<QuerySet [{'dateCreation': datetime.datetime(2023, 2, 6, 20, 36, 17, 585531, tzinfo=datetime.timezone.utc), 'commentUser__username': 'Bro', 'rating': 1, 'text': 'loveanimals'}]>
+>>>
+
+
+
+
+
+
+
+
+
