@@ -12,13 +12,33 @@ Posts
 </form>
 <h3>{{ time_now|date:'d M Y' }}</h3>
 <h3>Количество доступных статей и новостей:</h3><h3>{{ news|length }}</h3>
+
+{% if not is_author %}
+<button>
+    <a class="nav-link" href="{% url 'account_upgrade' %}">
+        <h4><strong>Join the authors!</strong></h4>
+    </a>
+</button>
+{% endif %}
+
    <hr>
+
+ {% if perms.news.add_post %}
+    <a href="{% url 'post_create' %}">Добавить товар</a>
+    {% endif %}
+
+
+
    {% if posts %}
        <table>
            <tr>
                <td>Заголовок</td>
                <td>Содержание</td>
                <td>Дата создания</td>
+
+                {% if perms.news.change_post or perms.news.delete_post %}
+                <td>Действия</td>
+                {% endif %}
 
            </tr>
 
@@ -27,7 +47,14 @@ Posts
                <td>{{ post.title|censor }}</td>
                <td>{{ post.text|censor|truncatechars:20 }}</td>
                <td>{{ post.dateCreation|date:'d M Y' }}</td>
-
+               <td>
+                    {% if perms.news.change_post %}
+                    <a href="{% url 'post_update' pk=post.id %}">Изменить</a>
+                    {% endif %}
+                    {% if perms.news.delete_post %}
+                    <a href="{% url 'post_delete' post.id %}">Удалить</a>
+                    {% endif %}
+                </td>
            </tr>
            {% endfor %}
 
@@ -55,3 +82,4 @@ Posts
    {% endif %}
 
 {% endblock content %}
+
